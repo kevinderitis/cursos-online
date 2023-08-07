@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import config from '../config/config.js';
 
 function createSendMail(mailConfig) {
 
@@ -15,30 +16,24 @@ function createSendMail(mailConfig) {
     return createSendMail({
       service: 'gmail',
       auth: {
-        user: "kevin.deritis77@gmail.com",
-        pass: "nusytyokiqqtfstb"
+        user: config.GMAIL_USER,
+        pass: config.GMAIL_PASS
       }
     })
   }
+    
+  export const sendMail = createSendMailGoogle()
   
-  
-  
-  const sendMail = createSendMailGoogle()
-  
-  const cuentaDePrueba = 'kevin.deritis77@gmail.com'
-  const asunto = process.argv[ 2 ] || 'sin asunto'
-  const mensajeHtml = process.argv[ 3 ] || 'nada para decir'
-  const rutaAdjunto = process.argv[ 4 ] 
+
   const adjuntos = []
   if (rutaAdjunto) {
     adjuntos.push({ path: rutaAdjunto })
   }
   
-  const info = await sendMail({
-    to: cuentaDePrueba,
-    subject: asunto,
-    html: mensajeHtml,
-    attachments: adjuntos
-  })
+  // const info = await sendMail({
+  //   to: cuentaDePrueba,
+  //   subject: asunto,
+  //   html: mensajeHtml,
+  //   attachments: adjuntos
+  // })
   
-  console.log(info)
