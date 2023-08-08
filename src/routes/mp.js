@@ -7,11 +7,13 @@ import path from 'path';
 import { sendMail } from '../services/email.js';
 import { sendMessage } from '../services/twilio.js';
 
+
 mercadopago.configure({
     access_token: config.MERCADO_PAGO_API_KEY,
   });
 
 mpRouter.get('/pagar', async (req, res) => {
+  const { phone, email } = req.query;
     try {
       
       const preference = {
@@ -26,7 +28,7 @@ mpRouter.get('/pagar', async (req, res) => {
           success: `${config.DOMAIN_URL}/api/mp/callbackURL`,
           failure: `${config.DOMAIN_URL}/api/mp/callbackURL`
         },
-        external_reference: req.query
+        external_reference: email
         
       };
   
@@ -40,30 +42,51 @@ mpRouter.get('/pagar', async (req, res) => {
     }
   });
 
-  const adjuntos = [];
-  const rutaAdjunto = 'archivo_adjunto.pdf';
-
-  if (fs.existsSync(rutaAdjunto)) {
-    const adjunto = {
-      filename: 'Manual_Sony.pdf', // Nombre del archivo adjunto en el correo
-      path: rutaAdjunto, // Ruta completa al archivo
-    };
-    adjuntos.push(adjunto);
-  } else {
-    console.error('El archivo adjunto no existe en la ruta especificada.');
-  }
 
   mpRouter.get('/callbackURL', async (req, res) => {
-    const { phone, email } = req.query;
-    console.log(req.query.external_reference)
-    // await sendMessage(req.query.external_reference)
-    await sendMail({
-      to: email,
-      subject: 'Este es el asunto de prueba',
-      attachments: adjuntos
-    })
-    res.sendStatus(200); 
+    const email = req.query.external_reference;
+    const status = req.query.status;
+    const adjuntos = []
+    adjuntos.push({ path: './Prompt-engineering.pdf' })
+
+    res.redirect('/api/mp/gracias')
+    if(status === 'approved'){
+      try {
+        await sendMail({
+          to: email,
+          subject: 'Libreria digital - Prompt engineering',
+          attachments: adjuntos,
+          html: `<!DOCTYPE html>
+          <html>
+          <head>
+            <title>Gracias por tu compra</title>
+          </head>
+          <body>
+            <div style="text-align: center; padding: 20px;">
+              <h2>¡Gracias por tu compra!</h2>
+             
+              <p>Queremos agradecerte sinceramente por haber adquirido nuestro curso de Prompt Engineering. Estamos emocionados de que hayas decidido unirte a nosotros en este emocionante viaje de aprendizaje y desarrollo.</p>
+              <p>El curso está diseñado para brindarte conocimientos prácticos y valiosos en el campo de la ingeniería y la programación. Esperamos que encuentres el contenido interesante y útil para tu crecimiento profesional.</p>
+              <p>Si tienes alguna pregunta o necesitas asistencia durante el curso, no dudes en ponerte en contacto con nuestro equipo de soporte. Estamos aquí para ayudarte en cada paso del camino.</p>
+              <p>Una vez más, gracias por confiar en nosotros.</p>
+              <p>Saludos cordiales,</p>
+              <p>El equipo de Libreria digital</p>
+            </div>
+          </body>
+          </html>
+          `
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    
+
   });
+
+  mpRouter.get('/gracias', (req, res) => {
+    res.send('gracias por la compra')
+  })
 
 
 
