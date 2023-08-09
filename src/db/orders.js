@@ -1,16 +1,17 @@
 import mongoose from 'mongoose';
-import { orderModel } from './models/orders';
+import { orderModel } from './models/orders.js';
+import config from '../config/config.js';
 
-await mongoose.connect('mongodb+srv://coderhouse:coder123456@coderhouse.z88zdi9.mongodb.net/cursosonline?retryWrites=true&w=majority') 
+await mongoose.connect(config.MONGO_URL) 
 
 export const createOrder = async order => {
-    let order;
+    let newOrder;
     try {
-        order = await orderModel.create(order)
+        newOrder = await orderModel.create(order)
     } catch (error) {
         console.log(error)
     }
-    return order;
+    return newOrder;
 };
 
 export const getAllOrders = async () => {

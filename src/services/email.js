@@ -24,16 +24,3 @@ function createSendMail(mailConfig) {
     
   export const sendMail = createSendMailGoogle()
   
-
-  // const adjuntos = []
-  // if (rutaAdjunto) {
-  //   adjuntos.push({ path: rutaAdjunto })
-  // }
-  
-  // const info = await sendMail({
-  //   to: cuentaDePrueba,
-  //   subject: asunto,
-  //   html: mensajeHtml,
-  //   attachments: adjuntos
-  // })
-  

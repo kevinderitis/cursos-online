@@ -2,10 +2,8 @@ import { Router } from 'express';
 const mpRouter = Router();
 import mercadopago from 'mercadopago';
 import config from '../config/config.js';
-import fs from 'fs';
-import path from 'path';
 import { sendMail } from '../services/email.js';
-import { sendMessage } from '../services/twilio.js';
+import { createOrder } from '../db/orders.js'
 
 
 mercadopago.configure({
@@ -26,7 +24,7 @@ mpRouter.get('/pagar', async (req, res) => {
         ],
         back_urls: {
           success: `${config.DOMAIN_URL}/api/mp/callbackURL`,
-          failure: `${config.DOMAIN_URL}/api/mp/callbackURL`
+          failure: `${config.DOMAIN_URL}/api/mp/failed-payment`
         },
         external_reference: email
         
@@ -46,10 +44,18 @@ mpRouter.get('/pagar', async (req, res) => {
   mpRouter.get('/callbackURL', async (req, res) => {
     const email = req.query.external_reference;
     const status = req.query.status;
+
+    try {
+      await createOrder(req.query)
+    } catch (error) {
+      console.log(error)
+    }
+
+
     const adjuntos = []
     adjuntos.push({ path: './Prompt-engineering.pdf' })
 
-    res.redirect('/api/mp/gracias')
+    res.redirect(config.SUCCESFULL_PAYMENT_URL)
     if(status === 'approved'){
       try {
         await sendMail({
@@ -84,8 +90,13 @@ mpRouter.get('/pagar', async (req, res) => {
 
   });
 
-  mpRouter.get('/gracias', (req, res) => {
-    res.send('gracias por la compra')
+  mpRouter.get('/failed-payment', async (req, res) => {
+    try {
+      await createOrder(req.query)
+    } catch (error) {
+      console.log(error)
+    }
+    res.redirect(config.FAILED_PAYMENT_URL)
   })
 
 
