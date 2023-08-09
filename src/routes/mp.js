@@ -33,7 +33,7 @@ mpRouter.get('/pagar', async (req, res) => {
       const response = await mercadopago.preferences.create(preference);
   
      
-      res.redirect(response.body.init_point);
+      res.send(response.body.init_point);
     } catch (error) {
       console.error('Error al crear la preferencia de pago:', error);
       res.status(500).send('Hubo un error al procesar el pago.');
