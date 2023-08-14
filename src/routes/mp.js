@@ -56,7 +56,6 @@ mpRouter.get('/pagar', async (req, res) => {
     adjuntos.push({ path: './Prompt-engineering.pdf' })
 
     res.redirect(config.SUCCESFULL_PAYMENT_URL)
-    if(status === 'approved'){
       try {
         await sendMail({
           to: email,
@@ -85,9 +84,7 @@ mpRouter.get('/pagar', async (req, res) => {
       } catch (error) {
         console.log(error)
       }
-    }
-    
-
+  
   });
 
   mpRouter.get('/failed-payment', async (req, res) => {
