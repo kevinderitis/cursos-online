@@ -16,13 +16,13 @@ export const createRecord = async email => {
 
 export const updateRecord = async (email) => {
     try {
-        const filter = { _id: email };
+        const filter = { email };
         const update = { $set: { sent: true, payment: true } };
 
         const result = await emailModel.updateOne(filter, update);
 
         if (result.nModified === 1) {
-            const updatedRecord = await emailModel.findById(email);
+            const updatedRecord = await emailModel.findById({email});
             return updatedRecord;
         } else {
             console.log('Documento no encontrado o no modificado.');
@@ -33,3 +33,13 @@ export const updateRecord = async (email) => {
         return null;
     }
 };
+
+export const getRecordByEmail = async email => {
+    let order;
+    try {
+        order = await emailModel.findOne({ email });
+    } catch (error) {
+        console.log(error)
+    }
+    return order;
+}
