@@ -108,7 +108,7 @@ mpRouter.get('/pagar', async (req, res) => {
     adjuntos.push({ path: './Prompt-engineering.pdf' })
     let emailSent;
     try {
-      let paymentId = req.query.id;
+      let paymentId = req.query.data.id;
       let payment = await getPaymentById(paymentId)
       console.log(payment.external_reference)
       let email = payment.external_reference;
