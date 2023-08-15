@@ -4,6 +4,7 @@ import mercadopago from 'mercadopago';
 import config from '../config/config.js';
 import { sendMail } from '../services/email.js';
 import { createOrder } from '../db/orders.js'
+import { getPaymentById } from '../services/utils.js';
 
 
 mercadopago.configure({
@@ -99,9 +100,44 @@ mpRouter.get('/pagar', async (req, res) => {
     res.redirect(config.FAILED_PAYMENT_URL)
   })
 
-  mpRouter.post('/payment-callback', (req, res) => {
-    console.log(req.body)
-    res.send('ok')
+  mpRouter.post('/payment-callback', async (req, res) => {
+    const adjuntos = []
+    adjuntos.push({ path: './Prompt-engineering.pdf' })
+    let emailSent;
+    try {
+      let paymentId = req.query.id;
+      let payment = await getPaymentById(paymentId)
+      console.log(payment.external_reference)
+      let email = payment.external_reference;
+      emailSent = await sendMail({
+        to: email,
+        subject: 'Libreria digital - Prompt engineering',
+        attachments: adjuntos,
+        html: `<!DOCTYPE html>
+        <html>
+        <head>
+          <title>Gracias por tu compra</title>
+        </head>
+        <body>
+          <div style="text-align: center; padding: 20px;">
+            <h2>¡Gracias por tu compra!</h2>
+           
+            <p>Queremos agradecerte sinceramente por haber adquirido nuestro curso de Prompt Engineering. Estamos emocionados de que hayas decidido unirte a nosotros en este emocionante viaje de aprendizaje y desarrollo.</p>
+            <p>El curso está diseñado para brindarte conocimientos prácticos y valiosos en el campo de la ingeniería y la programación. Esperamos que encuentres el contenido interesante y útil para tu crecimiento profesional.</p>
+            <p>Si tienes alguna pregunta o necesitas asistencia durante el curso, no dudes en ponerte en contacto con nuestro equipo de soporte. Estamos aquí para ayudarte en cada paso del camino.</p>
+            <p>Una vez más, gracias por confiar en nosotros.</p>
+            <p>Saludos cordiales,</p>
+            <p>El equipo de Libreria digital</p>
+          </div>
+        </body>
+        </html>
+        `
+      })
+    } catch (error) {
+      console.log(error)
+    }
+   
+    res.send({ status: 'success', payload: emailSent })
   })
 
 
