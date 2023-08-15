@@ -31,7 +31,7 @@ mpRouter.get('/pagar', async (req, res) => {
       };
   
       const response = await mercadopago.preferences.create(preference);
-  
+      console.log(response)
      
       res.send(response.body.init_point);
     } catch (error) {
