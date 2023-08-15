@@ -98,6 +98,7 @@ mpRouter.get('/pagar', async (req, res) => {
 
   mpRouter.post('/payment-callback', (req, res) => {
     console.log(req.body)
+    res.send('ok')
   })
 
 
