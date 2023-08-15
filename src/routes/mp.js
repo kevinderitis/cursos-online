@@ -96,6 +96,9 @@ mpRouter.get('/pagar', async (req, res) => {
     res.redirect(config.FAILED_PAYMENT_URL)
   })
 
+  mpRouter.post('/payment-callback', (req, res) => {
+    console.log(req.body)
+  })
 
 
   export default mpRouter;
