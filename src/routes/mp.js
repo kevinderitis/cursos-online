@@ -26,7 +26,10 @@ mpRouter.get('/pagar', async (req, res) => {
           success: `${config.DOMAIN_URL}/api/mp/callbackURL`,
           failure: `${config.DOMAIN_URL}/api/mp/failed-payment`
         },
-        external_reference: email
+        external_reference: email,
+        payer: {
+          email: email
+        }
         
       };
   
