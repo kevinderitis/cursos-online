@@ -5,6 +5,7 @@ import config from '../config/config.js';
 import { sendMail } from '../services/email.js';
 import { createOrder } from '../db/orders.js'
 import { getPaymentById } from '../services/utils.js';
+import { createRecord, updateRecord } from '../db/email.js'
 
 
 mercadopago.configure({
@@ -36,7 +37,7 @@ mpRouter.get('/pagar', async (req, res) => {
   
       const response = await mercadopago.preferences.create(preference);
       console.log(response)
-     
+      await createRecord({ email, payment: false, sent: false })
       res.send(response.body.init_point);
     } catch (error) {
       console.error('Error al crear la preferencia de pago:', error);
@@ -84,7 +85,9 @@ mpRouter.get('/pagar', async (req, res) => {
           </body>
           </html>
           `
-        })
+        });
+
+        await updateRecord(email)
       } catch (error) {
         console.log(error)
       }
@@ -109,6 +112,7 @@ mpRouter.get('/pagar', async (req, res) => {
       let payment = await getPaymentById(paymentId)
       console.log(payment.external_reference)
       let email = payment.external_reference;
+
       emailSent = await sendMail({
         to: email,
         subject: 'Libreria digital - Prompt engineering',
@@ -133,6 +137,7 @@ mpRouter.get('/pagar', async (req, res) => {
         </html>
         `
       })
+      await updateRecord(email)
     } catch (error) {
       console.log(error)
     }
