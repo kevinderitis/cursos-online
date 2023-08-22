@@ -13,28 +13,54 @@ mercadopago.configure({
   });
 
 mpRouter.get('/pagar', async (req, res) => {
-  const { phone, email } = req.query;
+  const { phone, email, curso } = req.query;
+  let preference;
     try {
-      
-      const preference = {
-        items: [
-          {
-            title: config.PREFERENCE_TITLE,
-            unit_price: config.PREFERENCE_PRICE, 
-            quantity: 1,
+      if(curso === 'procrastinacion'){
+          preference = {
+          items: [
+            {
+              title: 'Curso de procrastinación',
+              unit_price: 1699, 
+              quantity: 1,
+            },
+          ],
+          auto_return: "approved",
+          back_urls: {
+            success: `${config.DOMAIN_URL}/api/mp/callbackURL`,
+            failure: `${config.DOMAIN_URL}/api/mp/failed-payment`
           },
-        ],
-        auto_return: "approved",
-        back_urls: {
-          success: `${config.DOMAIN_URL}/api/mp/callbackURL`,
-          failure: `${config.DOMAIN_URL}/api/mp/failed-payment`
-        },
-        external_reference: email,
-        payer: {
-          email: email
-        }
-        
-      };
+          external_reference: email,
+          payer: {
+            email: email
+          }
+          
+        };
+      }else{
+
+        preference = {
+          items: [
+            {
+              title: config.PREFERENCE_TITLE,
+              unit_price: config.PREFERENCE_PRICE, 
+              quantity: 1,
+            },
+          ],
+          auto_return: "approved",
+          back_urls: {
+            success: `${config.DOMAIN_URL}/api/mp/callbackURL`,
+            failure: `${config.DOMAIN_URL}/api/mp/failed-payment`
+          },
+          external_reference: email,
+          payer: {
+            email: email
+          }
+          
+        };
+  
+      }
+
+
   
       const response = await mercadopago.preferences.create(preference);
       console.log(response)
