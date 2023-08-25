@@ -66,7 +66,7 @@ mpRouter.get('/pagar', async (req, res) => {
   
       const response = await mercadopago.preferences.create(preference);
       console.log(response)
-      await createRecord({ email, payment: false, sent: false })
+      await createRecord({ email, payment: false, sent: false, curso })
       res.send(response.body.init_point);
     } catch (error) {
       console.error('Error al crear la preferencia de pago:', error);
@@ -102,7 +102,6 @@ mpRouter.get('/pagar', async (req, res) => {
   })
 
   mpRouter.post('/payment-callback', async (req, res) => {
-    console.log(req.query)
     let data = req.query;
     let paymentId = data['data.id'];
   
@@ -113,12 +112,27 @@ mpRouter.get('/pagar', async (req, res) => {
       let payment = await getPaymentById(paymentId)
       console.log(payment.external_reference)
       let email = payment.external_reference;
-      let curso = payment.payer.curso;
+      let response = await getRecordByEmail(email);
+      let curso = response.curso;
+
+      console.log(curso)
+
+      // switch (curso) {
+      //   case 'procrastinacion':
+      //     adjuntos.push({ path: './Procrastinacion.pdf' })
+      //     break;
+      //   case 'prompt':
+      //     adjuntos.push({ path: './Prompt-engineering.pdf' })
+      //       break;
+      
+      // }
 
       if(curso === 'procrastinacion'){
         adjuntos.push({ path: './Procrastinacion.pdf' })
       }else{
-        adjuntos.push({ path: './Prompt-engineering.pdf' })
+        if(curso === 'prompt'){
+          adjuntos.push({ path: './Prompt-engineering.pdf' })
+        }
       }
   
         emailSent = await sendMail({
