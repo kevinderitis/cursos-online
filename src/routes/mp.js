@@ -85,7 +85,7 @@ mpRouter.get('/pagar', async (req, res) => {
     }
 
     let response = await getRecordByEmail(email);
-    
+
     if(response.curso === 'procrastinacion'){
       res.redirect(config.SUCCESFULL_PAYMENT_URL_PROCRA)
     }
@@ -176,7 +176,7 @@ mpRouter.get('/pagar', async (req, res) => {
   
         emailSent = await sendMail({
           to: email,
-          subject: 'Libreria digital - Prompt engineering',
+          subject: 'Libreria digital',
           attachments: adjuntos,
           html
         })
