@@ -76,18 +76,19 @@ mpRouter.get('/pagar', async (req, res) => {
 
 
   mpRouter.get('/callbackURL', async (req, res) => {
-    const email = req.query.external_reference;
-    const status = req.query.status;
-
+    console.log(req.query)
+    let email = req.query.external_reference;
     try {
       await createOrder(req.query)
     } catch (error) {
       console.log(error)
     }
 
-
-    const adjuntos = []
-    adjuntos.push({ path: './Prompt-engineering.pdf' })
+    let response = await getRecordByEmail(email);
+    
+    if(response.curso === 'procrastinacion'){
+      res.redirect(config.SUCCESFULL_PAYMENT_URL_PROCRA)
+    }
 
     res.redirect(config.SUCCESFULL_PAYMENT_URL)
   });
