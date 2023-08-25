@@ -43,3 +43,23 @@ export const getRecordByEmail = async email => {
     }
     return order;
 }
+
+export const getAllRecords = async () => {
+    let records;
+    try {
+        records = await emailModel.find().sort({ _id: -1 });
+    } catch (error) {
+        console.log(error)
+    }
+    return records;
+}
+
+export const getPaidRecords = async () => {
+    let records;
+    try {
+        records = await emailModel.find({ payment: true }).sort({ _id: -1 });
+    } catch (error) {
+        console.log(error)
+    }
+    return records;
+}
