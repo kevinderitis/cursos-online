@@ -126,20 +126,32 @@ mpRouter.get('/pagar', async (req, res) => {
       //       break;
       
       // }
+      let html;
 
       if(curso === 'procrastinacion'){
-        adjuntos.push({ path: './Procrastinacion.pdf' })
+        adjuntos.push({ path: './Procrastinacion.pdf' });
+        html = `<!DOCTYPE html>
+        <html>
+        <head>
+          <title>Gracias por tu compra</title>
+        </head>
+        <body>
+          <div style="text-align: center; padding: 20px;">
+            <h2>¡Gracias por tu compra!</h2>
+            <p>Queremos agradecerte sinceramente por haber adquirido nuestro curso. Estamos emocionados de que hayas decidido unirte a nosotros en este emocionante viaje de aprendizaje y desarrollo.</p>
+            <p>Esperamos que encuentres el contenido interesante y útil para tu crecimiento profesional.</p>
+            <p>Si tienes alguna pregunta o necesitas asistencia durante el curso, no dudes en ponerte en contacto con nuestro equipo de soporte. Estamos aquí para ayudarte en cada paso del camino.</p>
+            <p>Una vez más, gracias por confiar en nosotros.</p>
+            <p>Saludos cordiales,</p>
+            <p>El equipo de Libreria digital</p>
+          </div>
+        </body>
+        </html>
+        `
       }else{
         if(curso === 'prompt'){
-          adjuntos.push({ path: './Prompt-engineering.pdf' })
-        }
-      }
-  
-        emailSent = await sendMail({
-          to: email,
-          subject: 'Libreria digital - Prompt engineering',
-          attachments: adjuntos,
-          html: `<!DOCTYPE html>
+          adjuntos.push({ path: './Prompt-engineering.pdf' });
+          html = `<!DOCTYPE html>
           <html>
           <head>
             <title>Gracias por tu compra</title>
@@ -158,6 +170,14 @@ mpRouter.get('/pagar', async (req, res) => {
           </body>
           </html>
           `
+        }
+      }
+  
+        emailSent = await sendMail({
+          to: email,
+          subject: 'Libreria digital - Prompt engineering',
+          attachments: adjuntos,
+          html
         })
       
 
