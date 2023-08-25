@@ -13,7 +13,7 @@ mercadopago.configure({
   });
 
 mpRouter.get('/pagar', async (req, res) => {
-  const { phone, email, curso } = req.query;
+  const { phone, email, curso } = req.  query;
   let preference;
     try {
       if(curso === 'procrastinacion'){
@@ -32,7 +32,8 @@ mpRouter.get('/pagar', async (req, res) => {
           },
           external_reference: email,
           payer: {
-            email: email
+            email: email,
+            curso: curso
           }
           
         };
@@ -51,12 +52,10 @@ mpRouter.get('/pagar', async (req, res) => {
             success: `${config.DOMAIN_URL}/api/mp/callbackURL`,
             failure: `${config.DOMAIN_URL}/api/mp/failed-payment`
           },
-          external_reference: {
-            email,
-            curso
-          },
+          external_reference: email,
           payer: {
-            email: email
+            email: email,
+            curso: curso
           }
           
         };
@@ -113,8 +112,8 @@ mpRouter.get('/pagar', async (req, res) => {
     try {
       let payment = await getPaymentById(paymentId)
       console.log(payment.external_reference)
-      let email = payment.external_reference.email;
-      let curso = payment.external_reference.curso;
+      let email = payment.external_reference;
+      let curso = payment.payer.curso;
 
       if(curso === 'procrastinacion'){
         adjuntos.push({ path: './Procrastinacion.pdf' })
