@@ -51,7 +51,10 @@ mpRouter.get('/pagar', async (req, res) => {
             success: `${config.DOMAIN_URL}/api/mp/callbackURL`,
             failure: `${config.DOMAIN_URL}/api/mp/failed-payment`
           },
-          external_reference: email,
+          external_reference: {
+            email,
+            curso
+          },
           payer: {
             email: email
           }
@@ -105,15 +108,20 @@ mpRouter.get('/pagar', async (req, res) => {
     let paymentId = data['data.id'];
   
     const adjuntos = []
-    adjuntos.push({ path: './Prompt-engineering.pdf' })
+    
     let emailSent;
     try {
       let payment = await getPaymentById(paymentId)
       console.log(payment.external_reference)
-      let email = payment.external_reference;
-      let record = await getRecordByEmail(email);
-      console.log(record)
-      if(!record.sent){
+      let email = payment.external_reference.email;
+      let curso = payment.external_reference.curso;
+
+      if(curso === 'procrastinacion'){
+        adjuntos.push({ path: './Procrastinacion.pdf' })
+      }else{
+        adjuntos.push({ path: './Prompt-engineering.pdf' })
+      }
+  
         emailSent = await sendMail({
           to: email,
           subject: 'Libreria digital - Prompt engineering',
@@ -138,7 +146,7 @@ mpRouter.get('/pagar', async (req, res) => {
           </html>
           `
         })
-      }
+      
 
       await updateRecord(email)
     } catch (error) {
