@@ -105,8 +105,7 @@ mpRouter.get('/pagar', async (req, res) => {
   mpRouter.post('/payment-callback', async (req, res) => {
     let data = req.query;
     let paymentId = data['data.id'];
-    const status = req.body.data.status;
-
+  
     console.log(`BODY: payment callback: ${req.body}`)
   
     const adjuntos = []
@@ -118,6 +117,7 @@ mpRouter.get('/pagar', async (req, res) => {
       let email = payment.external_reference;
       let response = await getRecordByEmail(email);
       let curso = response.curso;
+      let status = payment.status;
 
       console.log(curso)
 
@@ -177,7 +177,7 @@ mpRouter.get('/pagar', async (req, res) => {
         }
       }
 
-      if(status === 'approved'){
+      if(status === 'approved' || status === 'completed'){
         emailSent = await sendMail({
           to: email,
           subject: 'Libreria digital',
@@ -194,5 +194,12 @@ mpRouter.get('/pagar', async (req, res) => {
     res.send({ status: 'success', payload: emailSent })
   })
 
+
+  mpRouter.get('/test', async (req, res) => {
+    let pid = req.query.pid;
+    let payment = await getPaymentById(pid)
+    res.send(payment)
+    
+  })
 
   export default mpRouter;
