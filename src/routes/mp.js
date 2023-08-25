@@ -106,6 +106,8 @@ mpRouter.get('/pagar', async (req, res) => {
     let data = req.query;
     let paymentId = data['data.id'];
     const status = req.body.data.status;
+
+    console.log(`BODY: payment callback: ${req.body}`)
   
     const adjuntos = []
     
