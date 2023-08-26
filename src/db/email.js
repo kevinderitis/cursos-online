@@ -44,20 +44,40 @@ export const getRecordByEmail = async email => {
     return order;
 }
 
-export const getAllRecords = async () => {
+export const getAllRecords = async (page, limit) => {
     let records;
     try {
-        records = await emailModel.find().sort({ _id: -1 });
+        let result = await emailModel.paginate({}, { page, limit, sort: { _id: -1 } });
+        let formattedDocs = result.docs.map(record => {
+            const creationTimestamp = record._id.getTimestamp();
+            const formattedDate = new Date(creationTimestamp).toLocaleString();
+            return {
+                ...record.toObject(),
+                creationDate: formattedDate
+            };
+        });
+        result.docs = formattedDocs;
+        records = result;
     } catch (error) {
         console.log(error)
     }
     return records;
 }
 
-export const getPaidRecords = async () => {
+export const getPaidRecords = async (page, limit) => {
     let records;
     try {
-        records = await emailModel.find({ payment: true }).sort({ _id: -1 });
+        let result = await emailModel.paginate({ payment: true }, { page, limit, sort: { _id: -1 } });
+        let formattedDocs = result.docs.map(record => {
+            const creationTimestamp = record._id.getTimestamp();
+            const formattedDate = new Date(creationTimestamp).toLocaleString();
+            return {
+                ...record.toObject(),
+                creationDate: formattedDate
+            };
+        });
+        result.docs = formattedDocs;
+        records = result;
     } catch (error) {
         console.log(error)
     }
