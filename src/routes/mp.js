@@ -177,7 +177,7 @@ mpRouter.get('/pagar', async (req, res) => {
         }
       }
 
-      if(status === 'approved' || status === 'completed'){
+      if((status === 'approved' || status === 'completed') && !response.sent){
         emailSent = await sendMail({
           to: email,
           subject: 'Libreria digital',
